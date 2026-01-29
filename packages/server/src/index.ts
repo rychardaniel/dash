@@ -5,8 +5,12 @@ import cors from "cors";
 import { setupSocketHandlers } from "./socket/handlers.js";
 import type { ClientToServerEvents, ServerToClientEvents } from "@dash/shared";
 
-const PORT = 5000;
-const HOST = "192.168.1.14";
+const PORT = parseInt(process.env.PORT || "5000");
+const HOST = process.env.HOST || "0.0.0.0";
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+
+// Parse CLIENT_URL to support multiple origins (comma-separated)
+const allowedOrigins = CLIENT_URL.split(",").map((url) => url.trim());
 
 const app = express();
 const httpServer = createServer(app);
@@ -14,7 +18,7 @@ const httpServer = createServer(app);
 // Configure CORS
 app.use(
     cors({
-        origin: [`http://${HOST}:5173`, "http://localhost:5173"],
+        origin: allowedOrigins,
         credentials: true,
     }),
 );
@@ -24,7 +28,7 @@ app.use(express.json());
 // Socket.io setup with typed events
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
     cors: {
-        origin: [`http://${HOST}:5173`, "http://localhost:5173"],
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
         credentials: true,
     },

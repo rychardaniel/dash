@@ -9,7 +9,7 @@ import type {
     PlayerScore,
 } from "@dash/shared";
 
-const SOCKET_URL = "http://192.168.1.14:5000";
+const SOCKET_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
 
 type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
